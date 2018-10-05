@@ -1,7 +1,7 @@
 <template>
   <div id="app">
-    <centered-svg>
-      <planet :layers="layers" :size="size">
+    <centered-svg class="detail">
+      <planet :layers="layers" :size="200">
         <svg-center-label>{{selectedPlanet.name}}</svg-center-label>
       </planet>
     </centered-svg>
@@ -60,7 +60,15 @@ export default {
 body {
   padding: 20px;
 }
+#app {
+  position: relative;
+}
 .space {
   background-color: black;
+}
+.detail {
+  position: fixed;
+  top: 20px;
+  right: 20px;
 }
 </style>

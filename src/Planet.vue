@@ -8,17 +8,21 @@
 <script>
 import { scaleLinear } from 'd3-scale';
 
-const scale = scaleLinear()
-  .domain([0, 4025]) // miles
-  .range([0, 200]); // pixels
 export default {
   props: {
     layers: Array,
     size: Number
   },
+  data() {
+    return {
+      innerScale: scaleLinear()
+        .domain([0, 4025])
+        .range([0, 200])
+    };
+  },
   computed: {
     scale() {
-      return scale.range([0, this.size]);
+      return this.innerScale.range([0, this.size]);
     }
   }
 };
