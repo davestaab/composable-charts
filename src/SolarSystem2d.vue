@@ -48,8 +48,9 @@ export default {
   },
   methods: {
     rotationTimer() {
-      this.time += Date.now() - this.lastTime;
-      this.lastTime = Date.now();
+      const now = Date.now();
+      this.time += now - this.lastTime;
+      this.lastTime = now;
     },
     translate(p) {
       const planetPeriod = p.period * this.period;

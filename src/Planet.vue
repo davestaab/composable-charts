@@ -1,6 +1,6 @@
 <template>
   <g>
-    <circle v-for="l in layers" :key="l.name" :r="scale(l.radius)" :fill="l.color"></circle>
+    <circle v-for="l in displayLayers" :key="l.name" :r="l.displayRadius" :fill="l.color"></circle>
     <slot></slot>
   </g>
 </template>
@@ -15,15 +15,35 @@ export default {
   },
   data() {
     return {
-      innerScale: scaleLinear()
+      scale: scaleLinear()
         .domain([0, 4025])
         .range([0, 200])
     };
   },
   computed: {
-    scale() {
-      return this.innerScale.range([0, this.size]);
+    displayLayers() {
+      return this.layers.map(l => {
+        l.displayRadius = this.scale(l.radius);
+        // this is strictly to make the chart reactive when size changes
+        // it's required!
+        l.size = this.size;
+        return l;
+      });
     }
+  },
+  watch: {
+    size: {
+      immediate: true,
+      handler(val) {
+        this.scale.range([0, val]);
+      }
+    }
+    // layers: {
+    //   immediate: true,
+    //   handler(newVal) {
+    //     this.scale.domain([0, max(newVal.map(l => l.radius))]);
+    //   }
+    // }
   }
 };
 </script>
