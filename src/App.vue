@@ -1,16 +1,18 @@
 <template>
   <div id="app">
     <!-- step 1: the red planet -->
-    <svg width="500" height="500" class="space">
-      <g transform="translate(250, 250)">
-        <circle r="200" fill="firebrick"></circle>
-      </g>
-    </svg>
+    <svg-centered>
+      <circle r="200" fill="firebrick"></circle>
+    </svg-centered>
+
   </div>
 </template>
 
 <script>
-export default {};
+import SvgCentered from './SvgCentered';
+export default {
+  components: { SvgCentered }
+};
 </script>
 
 
