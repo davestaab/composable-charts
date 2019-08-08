@@ -17,12 +17,15 @@ import { max } from 'd3-array';
 export default {
   props: {
     layers: Array,
-    size: Number
-  },
-  data() {
-    return {
-      scale: scaleLinear()
-    };
+    size: Number,
+    scale: {
+      type: Function,
+      default: scaleLinear()
+    },
+    sharedDomain: {
+      type: Boolean,
+      default: false
+    }
   },
   computed: {
     displayLayers() {
@@ -32,9 +35,11 @@ export default {
       });
     },
     computedScale() {
-      return this.scale
-        .domain([0, max(this.layers.map(d => d.radius))]) // miles
-        .range([0, this.size / 2]);
+      this.scale.range([0, this.size / 2]);
+      !this.sharedDomain
+        ? this.scale.domain([0, max(this.layers.map(d => d.radius))])
+        : null;
+      return this.scale;
     }
   }
 };
