@@ -3,14 +3,14 @@
 </template>
 
 <script>
-import { axisLeft } from 'd3-axis';
+import { axisRight } from 'd3-axis';
 import { select } from 'd3-selection';
 
 function update(el, { value: scale }) {
-  axisLeft(scale)(select(el));
+  axisRight(scale)(select(el));
 }
 export default {
-  name: 'AxisLeft',
+  name: 'AxisRight',
   props: {
     scale: Function
   },
@@ -23,7 +23,7 @@ export default {
 };
 </script>
 
-<style>
+<style scoped>
 .domain {
   stroke: white;
 }

@@ -1,9 +1,9 @@
 <template>
   <g>
     <circle
-      v-for="l in displayLayers"
+      v-for="l in layers"
       :key="l.name"
-      :r="l.displayRadius"
+      :r="scale(l.radius)"
       :fill="l.color"
     ></circle>
     <slot></slot>
@@ -11,36 +11,10 @@
 </template>
 
 <script>
-import { scaleLinear } from 'd3-scale';
-import { max } from 'd3-array';
-
 export default {
   props: {
     layers: Array,
-    size: Number,
-    scale: {
-      type: Function,
-      default: scaleLinear()
-    },
-    sharedDomain: {
-      type: Boolean,
-      default: false
-    }
-  },
-  computed: {
-    displayLayers() {
-      return this.layers.map(l => {
-        l.displayRadius = this.computedScale(l.radius);
-        return l;
-      });
-    },
-    computedScale() {
-      this.scale.range([0, this.size / 2]);
-      !this.sharedDomain
-        ? this.scale.domain([0, max(this.layers.map(d => d.radius))])
-        : null;
-      return this.scale;
-    }
+    scale: Function
   }
 };
 </script>

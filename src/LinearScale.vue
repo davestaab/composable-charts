@@ -12,14 +12,17 @@ export default {
   props: {
     size: Number,
     data: Array,
-    accessor: Function
+    accessor: Function,
+    reverse: {
+      type: Boolean,
+      default: false
+    }
   },
   computed: {
     scale() {
-      const scale = scaleLinear()
+      return scaleLinear()
         .domain([0, max(this.data, this.accessor)])
-        .range([this.size, 0]);
-      return scale;
+        .range(this.reverse ? [this.size, 0] : [0, this.size]);
     }
   }
 };

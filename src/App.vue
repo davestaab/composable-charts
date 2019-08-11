@@ -10,9 +10,19 @@
     <!-- step 2: render planet -->
     <svg-chart v-slot="{ innerWidth }">
       <centered-square :size="innerWidth">
-        <planet :layers="Earth.layers" :size="innerWidth">
-          <text-centered>{{ Earth.name }}</text-centered>
-        </planet>
+        <linear-scale
+          :accessor="planetLayerRadiusAccessor"
+          :data="Earth.layers"
+          :size="innerWidth / 2"
+          v-slot="{ scale: planetScale }"
+        >
+          <!--          <planet :scale="planetScale" :layers="Sun.layers">-->
+          <!--            <text-centered>{{ Sun.name }}</text-centered>-->
+          <!--          </planet>-->
+          <planet :scale="planetScale" :layers="Earth.layers">
+            <text-centered>{{ Earth.name }}</text-centered>
+          </planet>
+        </linear-scale>
       </centered-square>
     </svg-chart>
     <br />
@@ -28,6 +38,7 @@
           :accessor="stockYAccessor"
           :data="stockData"
           :size="innerHeight"
+          :reverse="true"
           v-slot="{ scale: y }"
         >
           <line-path
@@ -73,6 +84,43 @@
     <!--            </planet>-->
     <!--          </solar-system>-->
     <!--    </column-svg>-->
+    <svg-chart
+      :padding="20"
+      :height="3200"
+      v-slot="{ innerWidth, innerHeight }"
+    >
+      <linear-scale
+        :accessor="planetDistanceAccessor"
+        :data="planets"
+        :size="innerHeight"
+        v-slot="{ scale: y }"
+      >
+        <centered-column :size="innerWidth">
+          <linear-scale
+            :accessor="planetLayerRadiusAccessor"
+            :data="planets.flatMap(p => p.layers)"
+            :size="50"
+            v-slot="{ scale: planetScale }"
+          >
+            <solar-system :planets="planets" :scale="y">
+              <template v-slot:default="{ planet }">
+                <planet :scale="planetScale" :layers="planet.layers">
+                  <text-centered>
+                    {{ planet.name }}
+                  </text-centered>
+                </planet>
+              </template>
+            </solar-system>
+          </linear-scale>
+        </centered-column>
+        <!--        <text-->
+        <!--          v-for="p in planets"-->
+        <!--          :transform="`translate(20, ${y(p.distance)})`"-->
+        <!--          >{{ p.name }}</text-->
+        <!--        >-->
+        <axis-right :scale="y"></axis-right>
+      </linear-scale>
+    </svg-chart>
 
     <!-- step beyond: render 2d animated solar system -->
     <!--    <centered-square>-->
@@ -89,13 +137,12 @@
 <script>
 import SvgChart from './SvgChart';
 import CenteredSquare from './CenteredSquare';
-import ColumnSvg from './ColumnSvg';
+import CenteredColumn from './CenteredColumn';
 import Planet from './Planet';
 import SolarSystem from './SolarSystem';
 import SolarSystem2d from './SolarSystem2d';
 import TextCentered from './TextCentered';
 import { Earth, planets, Sun } from './planets.js';
-import SpaceAxis from './SpaceAxis';
 import FourQuadrants from './FourQuadrants';
 import AreaPath from './AreaPath';
 import LinePath from './LinePath';
@@ -103,6 +150,7 @@ import TimeScale from './TimeScale';
 import LinearScale from './LinearScale';
 import AxisBottom from './AxisBottom';
 import AxisLeft from './AxisLeft';
+import AxisRight from './AxisRight';
 
 import aaplStock from 'raw-loader!./data/aapl.csv';
 
@@ -114,20 +162,20 @@ const stockData = csvParse(aaplStock, autoType);
 export default {
   components: {
     SvgChart,
-    CenteredSquare,
+    CenteredColumn,
     Planet,
-    ColumnSvg,
+    CenteredSquare,
     SolarSystem,
     SolarSystem2d,
     TextCentered,
-    SpaceAxis,
     FourQuadrants,
     AreaPath,
     TimeScale,
     LinearScale,
     LinePath,
     AxisBottom,
-    AxisLeft
+    AxisLeft,
+    AxisRight
   },
   data() {
     return {
@@ -139,7 +187,9 @@ export default {
       Earth,
       stockData,
       stockXAccessor: prop('date'),
-      stockYAccessor: prop('close')
+      stockYAccessor: prop('close'),
+      planetDistanceAccessor: prop('distance'),
+      planetLayerRadiusAccessor: prop('radius')
     };
   }
 };

@@ -1,10 +1,7 @@
 <template>
   <svg :width="width" :height="height" class="space">
     <g :transform="translate(padding, padding)">
-      <slot
-        v-bind:innerWidth="innerWidth"
-        v-bind:innerHeight="innerHeight"
-      ></slot>
+      <slot :innerWidth="innerWidth" :innerHeight="innerHeight"></slot>
     </g>
   </svg>
 </template>
