@@ -17,16 +17,41 @@
     </svg-chart>
     <br />
     <!-- area chart -->
-    <svg-chart v-slot="{ innerWidth, innerHeight }">
-      <area-path
-        :width="innerWidth"
-        :height="innerHeight"
+    <svg-chart :padding="35" v-slot="{ innerWidth, innerHeight }">
+      <time-scale
+        :accessor="stockXAccessor"
         :data="stockData"
-        :x-scale="stockXScale"
-        :y-scale="stockYScale"
-        :x-accessor="stockXAccessor"
-        :y-accessor="stockYAccessor"
-      ></area-path>
+        :size="innerWidth"
+        v-slot="{ scale: x }"
+      >
+        <linear-scale
+          :accessor="stockYAccessor"
+          :data="stockData"
+          :size="innerHeight"
+          v-slot="{ scale: y }"
+        >
+          <line-path
+            :data="stockData"
+            :x-scale="x"
+            :y-scale="y"
+            :x-accessor="stockXAccessor"
+            :y-accessor="stockYAccessor"
+          ></line-path>
+          <area-path
+            :data="stockData"
+            :x-scale="x"
+            :y-scale="y"
+            :x-accessor="stockXAccessor"
+            :y-accessor="stockYAccessor"
+          ></area-path>
+          <axis-bottom
+            :transform="`translate(0, ${innerHeight})`"
+            :scale="x"
+            :width="innerWidth"
+          ></axis-bottom>
+          <axis-left :scale="y"></axis-left>
+        </linear-scale>
+      </time-scale>
     </svg-chart>
 
     <!-- step 2b: render the sun -->
@@ -73,21 +98,18 @@ import { Earth, planets, Sun } from './planets.js';
 import SpaceAxis from './SpaceAxis';
 import FourQuadrants from './FourQuadrants';
 import AreaPath from './AreaPath';
+import LinePath from './LinePath';
+import TimeScale from './TimeScale';
+import LinearScale from './LinearScale';
+import AxisBottom from './AxisBottom';
+import AxisLeft from './AxisLeft';
+
 import aaplStock from 'raw-loader!./data/aapl.csv';
+
 import { csvParse, autoType } from 'd3-dsv';
-import { scaleLinear, scaleUtc } from 'd3-scale';
-import { max, extent } from 'd3-array';
 import { prop } from './utils';
 
 const stockData = csvParse(aaplStock, autoType);
-const stockXScale = scaleUtc().domain(extent(stockData, prop('date')));
-const stockYScale = scaleLinear()
-  .domain([0, max(stockData, prop('close'))])
-  .nice();
-
-const scale = scaleLinear()
-  .domain([0, max(planets.map(d => d.distance))]) // miles
-  .range([0, 3200]); // pixels
 
 export default {
   components: {
@@ -100,7 +122,12 @@ export default {
     TextCentered,
     SpaceAxis,
     FourQuadrants,
-    AreaPath
+    AreaPath,
+    TimeScale,
+    LinearScale,
+    LinePath,
+    AxisBottom,
+    AxisLeft
   },
   data() {
     return {
@@ -110,9 +137,6 @@ export default {
       planets,
       Sun,
       Earth,
-      scale,
-      stockXScale,
-      stockYScale,
       stockData,
       stockXAccessor: prop('date'),
       stockYAccessor: prop('close')

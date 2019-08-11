@@ -8,8 +8,6 @@ import { area } from 'd3-shape';
 export default {
   name: 'AreaPath',
   props: {
-    width: Number,
-    height: Number,
     data: Array,
     xScale: Function,
     yScale: Function,
@@ -18,8 +16,6 @@ export default {
   },
   computed: {
     area() {
-      this.xScale.range([0, this.width]);
-      this.yScale.range([this.height, 0]);
       return area()
         .x(d => this.xScale(this.xAccessor(d)))
         .y0(this.yScale(0))
